@@ -28,7 +28,9 @@
 #include "ipv4.h"
 #include "sys_time.h"
 
+#ifndef RTE_LOGTYPE_MBUF
 #define RTE_LOGTYPE_MBUF    RTE_LOGTYPE_USER1
+#endif
 
 #define MBUF_DYNFIELDS_MAX  8
 static int mbuf_dynfields_offset[MBUF_DYNFIELDS_MAX];

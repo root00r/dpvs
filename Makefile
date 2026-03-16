@@ -19,7 +19,7 @@
 # Makefile for DPVS
 #
 MAKE	= make
-CC 		= gcc
+CC 		= gcc -g 
 LD 		= ld
 RM		= rm
 

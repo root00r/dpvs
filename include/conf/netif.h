@@ -28,7 +28,10 @@
  * All types defined here must be the same as in dpdk.h,
  * error would occur otherwise */
 
+#ifndef RTE_ETHDEV_QUEUE_STAT_CNTRS
 #define RTE_ETHDEV_QUEUE_STAT_CNTRS     16
+#endif // !
+
 #define NETIF_MAX_BOND_SLAVES           32
 
 /*** end of type from dpdk.h ***/

@@ -57,7 +57,7 @@
 
 static void inline dpdk_version_check(void)
 {
-#if RTE_VERSION < RTE_VERSION_NUM(24, 11, 0, 0)
+#if RTE_VERSION < RTE_VERSION_NUM(17, 11, 0, 0)
     rte_panic("The current DPVS requires dpdk-stable-24.11 or higher. "
             "Try old releases if you are using earlier dpdk versions.");
 #endif

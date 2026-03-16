@@ -94,6 +94,14 @@ static int flow_fuzzy_match = 0;
 #define NETIF_BOND_MODE_DEF         BONDING_MODE_ROUND_ROBIN
 #define NETIF_BOND_NUMA_NODE_DEF    0
 
+/* DPDK bonding API version compatibility */
+#if RTE_VERSION < RTE_VERSION_NUM(22, 11, 0, 0)
+#define rte_eth_bond_member_add         rte_eth_bond_slave_add
+#define rte_eth_bond_member_remove      rte_eth_bond_slave_remove
+#define rte_eth_bond_members_get        rte_eth_bond_slaves_get
+#define rte_eth_bond_active_members_get rte_eth_bond_active_slaves_get
+#endif
+
 struct port_conf_stream {
     int port_id;
     char name[32];
@@ -3756,7 +3764,7 @@ static int rss_resolve_proc(char *rss)
 }
 
 /* check and adapt device offloading/rss features */
-static void adapt_device_conf(portid_t port_id, uint64_t *rss_hf,
+/*static void adapt_device_conf(portid_t port_id, uint64_t *rss_hf,
         uint64_t *rx_offload, uint64_t *tx_offload)
 {
     struct rte_eth_dev_info dev_info;
@@ -3771,7 +3779,7 @@ static void adapt_device_conf(portid_t port_id, uint64_t *rss_hf,
         RTE_LOG(WARNING, NETIF,
                 "Ethdev port_id=%u invalid rss_hf: 0x%"PRIx64", valid value: 0x%"PRIx64"\n",
                 port_id, *rss_hf, dev_info.flow_type_rss_offloads);
-        /* mask the unsupported rss_hf */
+        // mask the unsupported rss_hf
         *rss_hf &= dev_info.flow_type_rss_offloads;
     }
 
@@ -3779,7 +3787,7 @@ static void adapt_device_conf(portid_t port_id, uint64_t *rss_hf,
         RTE_LOG(WARNING, NETIF,
                 "Ethdev port_id=%u invalid rx_offload: 0x%"PRIx64", valid value: 0x%"PRIx64"\n",
                 port_id, *rx_offload, dev_info.rx_offload_capa);
-        /* mask the unsupported rx_offload */
+        // mask the unsupported rx_offload
         *rx_offload &= dev_info.rx_offload_capa;
     }
 
@@ -3787,10 +3795,11 @@ static void adapt_device_conf(portid_t port_id, uint64_t *rss_hf,
         RTE_LOG(WARNING, NETIF,
                 "Ethdev port_id=%u invalid tx_offload: 0x%"PRIx64", valid value: 0x%"PRIx64"\n",
                 port_id, *tx_offload, dev_info.tx_offload_capa);
-        /* mask the unsupported tx_offload */
+        // mask the unsupported tx_offload 
         *tx_offload &= dev_info.tx_offload_capa;
     }
 }
+*/
 
 /* fill in rx/tx queue configurations, including queue number,
  * decriptor number, bonding device's rss */
@@ -3983,11 +3992,11 @@ int netif_port_start(struct netif_port *port)
             return ret;
     }
 
-    if (port->flag & NETIF_PORT_FLAG_RX_IP_CSUM_OFFLOAD)
+    /*if (port->flag & NETIF_PORT_FLAG_RX_IP_CSUM_OFFLOAD)
         port->dev_conf.rxmode.offloads |= RTE_ETH_RX_OFFLOAD_IPV4_CKSUM;
     if (port->flag & NETIF_PORT_FLAG_RX_VLAN_STRIP_OFFLOAD)
         port->dev_conf.rxmode.offloads |= RTE_ETH_RX_OFFLOAD_VLAN_STRIP;
-
+    
     if (port->flag & NETIF_PORT_FLAG_TX_IP_CSUM_OFFLOAD)
         port->dev_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_IPV4_CKSUM;
     if (port->flag & NETIF_PORT_FLAG_TX_UDP_CSUM_OFFLOAD)
@@ -3996,10 +4005,13 @@ int netif_port_start(struct netif_port *port)
         port->dev_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_TCP_CKSUM;
     if (port->flag & NETIF_PORT_FLAG_TX_MBUF_FAST_FREE)
         port->dev_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_MBUF_FAST_FREE;
-
-    adapt_device_conf(port->id, &port->dev_conf.rx_adv_conf.rss_conf.rss_hf,
-            &port->dev_conf.rxmode.offloads, &port->dev_conf.txmode.offloads);
-
+	*/
+    //adapt_device_conf(port->id, &port->dev_conf.rx_adv_conf.rss_conf.rss_hf,
+    //        &port->dev_conf.rxmode.offloads, &port->dev_conf.txmode.offloads);
+    port->dev_conf.rx_adv_conf.rss_conf.rss_hf= 0x0;
+    port->dev_conf.rxmode.offloads = 0x0;
+    port->dev_conf.txmode.offloads = 0x0;
+    port->dev_conf.rxmode.mq_mode = 0x0;
     ret = rte_eth_dev_configure(port->id, port->nrxq, port->ntxq, &port->dev_conf);
     if (ret < 0 ) {
         RTE_LOG(ERR, NETIF, "%s: fail to config %s\n", __func__, port->name);
